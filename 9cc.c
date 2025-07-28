@@ -22,6 +22,21 @@ struct Token{
 
 Token* token;
 
+char* user_input;
+
+void error_at(char* loc,char* fmt,...){
+    va_list ap;
+    va_start(ap,fmt);
+
+    int pos = loc - user_input;
+    fprintf(stderr, "%s\n", user_input);
+    fprintf(stderr, "%*s", pos, "");
+    fprintf(stderr, "^ ");
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, "\n");
+    exit(1);
+}
+
 // Auxiliary function for quickly outputting error messages
 void error(char* fmt,...){
     va_list ap;
@@ -45,7 +60,7 @@ bool consume(char op){
 // If it is, consume it; if not, directly report an error
 void expect(char op){
     if(token->kind!=TK_RESERVED||token->str[0]!=op){
-        error("%c expected here",op);
+        error_at(token->str,"%c expected here",op);
     }
     token=token->next;
 }
@@ -54,7 +69,7 @@ void expect(char op){
 // In other cases, an error will be reported.
 int expect_number(){
     if(token->kind!=TK_NUM){
-        error("Number expected here");
+        error_at(token->str,"Number expected here");
     }
     int val=token->val;
     token=token->next;
@@ -94,7 +109,7 @@ Token* tokenize(char *p){
             cur->val=strtol(p,&p,10);
             continue;
         }
-        error("%c unexpected.",*p);
+        error_at(p,"%c unexpected.",*p);
     }
     new_token(TK_EOF, cur, p);
     return head.next;
@@ -106,6 +121,7 @@ int main(int argc,char** argv){
         return 1;
     }
 
+    user_input = argv[1];
     token=tokenize(argv[1]);
 
     printf(".intel_syntax noprefix\n");
@@ -115,14 +131,14 @@ int main(int argc,char** argv){
     printf("  mov rax, %d\n", expect_number());
     while (!at_eof()) {
         if (consume('+')) {
-            printf("\tadd rax, %d\n", expect_number());
+            printf("  add rax, %d\n", expect_number());
             continue;
         }
 
         expect('-');
-        printf("\tsub rax, %d\n", expect_number());
+        printf("  sub rax, %d\n", expect_number());
     }
-    printf("\tret\n");
+    printf("  ret\n");
     return 0;
 }
 
