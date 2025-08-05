@@ -38,6 +38,12 @@ Token *tokenize(char *p) {
             continue;
         }
 
+        if (strncmp(p, "return", 6) == 0 && !isalnum(p[6]) && !p[6] == '_') {
+            cur=new_token(TK_RETURN,cur,p,6);
+            p += 6;
+            continue;
+        }
+
         if (isalpha(*p)) {
             char *q = p; // 1. 标记起点
             while (isalnum(*p)) { // 2. 贪心循环

@@ -69,5 +69,5 @@ assert 6 "foo=1; bar=2; foo=foo+bar; bar=bar*foo; bar;"
 assert 1 "a=2; b=3; a=b-a; a==1;"
 
 
-
+assert 2 "a=2+1;b=a*2/3;c=b+1;return b;"
 echo OK

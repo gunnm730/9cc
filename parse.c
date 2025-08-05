@@ -27,6 +27,14 @@ bool consume(char *op) {
   return true;
 }
 
+bool consume_kind(TokenKind kind) {
+    if (token->kind != kind) {
+        return false;
+    }
+    token = token->next;
+    return true;
+}
+
 Token* consume_ident(){
     Token* tok;
     if(token->kind==TK_IDENT){
@@ -41,7 +49,7 @@ void expect(char *op) {
     if (token->kind != TK_RESERVED ||
       strlen(op) != token->len ||
       memcmp(token->str, op, token->len)) {
-        error_at(token->str, "应为 '%c'", op);
+        error_at(token->str, "应为 '%s'", op);
     }
     token = token->next;
 }
@@ -68,7 +76,7 @@ LVar *find_lvar(Token *tok) {
 
 /*
 program    = stmt*
-stmt       = expr ";"
+stmt       = expr ";" | return expr ";"
 expr       = assign
 assign     = equality ("=" assign)?
 equality   = relational ("==" relational | "!=" relational)*
@@ -98,7 +106,17 @@ void program() {
 }
 
 Node *stmt(){
-    Node *node = expr();
+    Node *node;
+
+    if (consume_kind(TK_RETURN)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_RETURN;
+        node->lhs = new_node_num(0);
+        node->rhs = expr();
+    } else {
+        node = expr();
+    }
+
     expect(";");
     return node;
 }

@@ -22,6 +22,7 @@ typedef enum {
     TK_RESERVED, // 关键字、运算符
     TK_NUM,      // 整数
     TK_IDENT,    // identifier
+    TK_RETURN,
     TK_EOF,      // 文件结束符
 } TokenKind;
 
@@ -62,7 +63,9 @@ typedef enum {
     ND_NG,  // <=
     ND_GR,  // >
     ND_LE,   // <
+    ND_RETURN,
     ND_ASSIGN // =
+
 } NodeKind;
 
 
