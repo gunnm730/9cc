@@ -4,6 +4,7 @@ void gen_lval(Node *node);
 
 // --- 代码生成 ---
 void gen(Node *node) {
+    if(!node)return;
     switch (node->kind) {
     case ND_NUM:
         printf("  push %d\n", node->val);
@@ -24,7 +25,7 @@ void gen(Node *node) {
         printf("  push rdi\n");
         return;
     case ND_RETURN:
-        gen(node->rhs);
+        gen(node->lhs);
         printf("  pop rax\n");
         printf("  mov rsp, rbp\n");
         printf("  pop rbp\n");

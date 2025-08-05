@@ -105,15 +105,14 @@ void program() {
     code[i] = NULL;
 }
 
-Node *stmt(){
+Node *stmt() {
     Node *node;
 
+    // 检查是否是 return 语句
     if (consume_kind(TK_RETURN)) {
-        node = calloc(1, sizeof(Node));
-        node->kind = ND_RETURN;
-        node->lhs = new_node_num(0);
-        node->rhs = expr();
+        node=new_node(ND_RETURN,expr(),NULL);
     } else {
+        // 否则，就是一个普通的表达式语句
         node = expr();
     }
 
